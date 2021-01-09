@@ -5,20 +5,21 @@
 
 #include "./config.hpp"
 
-int COUNT = 0;
+RTC_DATA_ATTR int COUNT = 0;
 
 void ConnectWifi();
 void Send();
 
 void setup() {
+  COUNT++;
   M5.begin();
   M5.Power.begin();
-  M5.Power.setPowerBoostKeepOn(true);
+  // M5.Power.setPowerBoostKeepOn(true);
   ConnectWifi();
 
   Send();
-  delay(60000);
-  ESP.restart();
+  esp_sleep_enable_timer_wakeup(60000000);
+  esp_deep_sleep_start();
 }
 
 void loop() {}
@@ -46,6 +47,7 @@ void Send() {
   StaticJsonDocument<255> json_request;
   char buffer[255];
   json_request["count"] = COUNT;
+  json_request["bt"] = M5.Power.getBatteryLevel();
   serializeJson(json_request, buffer, sizeof(buffer));
   HTTPClient http;
   http.begin(WEB_APP_URL);
