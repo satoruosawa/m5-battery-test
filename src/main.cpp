@@ -5,7 +5,11 @@
 
 #include "./config.hpp"
 
+#define INTERVAL 60000000  // 1min
+
 RTC_DATA_ATTR int COUNT = 0;
+
+int CONNECTION_TRIAL_COUNT = 0;
 
 void ConnectWifi();
 void Send();
@@ -18,7 +22,7 @@ void setup() {
   ConnectWifi();
 
   Send();
-  esp_sleep_enable_timer_wakeup(60000000);
+  esp_sleep_enable_timer_wakeup(INTERVAL);
   esp_deep_sleep_start();
 }
 
@@ -28,13 +32,13 @@ void ConnectWifi() {
   M5.Lcd.setCursor(0, 16);
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
   M5.Lcd.print("connecting");
-  int cnt = 0;
   while (WiFi.status() != WL_CONNECTED) {
     M5.Lcd.print(".");
     delay(500);
-    cnt++;
-    if (cnt >= 30) {
-      ESP.restart();
+    CONNECTION_TRIAL_COUNT++;
+    if (CONNECTION_TRIAL_COUNT >= 30) {
+      esp_sleep_enable_timer_wakeup(INTERVAL);
+      esp_deep_sleep_start();
     }
   }
   M5.Lcd.setCursor(0, 16);
@@ -48,6 +52,7 @@ void Send() {
   char buffer[255];
   json_request["count"] = COUNT;
   json_request["bt"] = M5.Power.getBatteryLevel();
+  json_request["connectionTrialCount"] = CONNECTION_TRIAL_COUNT;
   serializeJson(json_request, buffer, sizeof(buffer));
   HTTPClient http;
   http.begin(WEB_APP_URL);
