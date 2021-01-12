@@ -5,7 +5,7 @@
 
 #include "./config.hpp"
 
-#define INTERVAL 60000000  // 1min
+#define INTERVAL 30000000  // 30sec
 
 RTC_DATA_ATTR int COUNT = 0;
 
