@@ -5,7 +5,7 @@
 
 #include "./config.hpp"
 
-#define INTERVAL 30000000  // 30sec
+#define INTERVAL 600000000  // 10min
 
 RTC_DATA_ATTR int COUNT = 0;
 
@@ -16,7 +16,7 @@ void Send();
 
 void setup() {
   COUNT++;
-  M5.begin();
+  M5.begin(false, false, false, false);
   M5.Power.begin();
   M5.Power.setPowerBoostKeepOn(true);
   ConnectWifi();
@@ -29,11 +29,11 @@ void setup() {
 void loop() {}
 
 void ConnectWifi() {
-  M5.Lcd.setCursor(0, 16);
+  // M5.Lcd.setCursor(0, 16);
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
-  M5.Lcd.print("connecting");
+  // M5.Lcd.print("connecting");
   while (WiFi.status() != WL_CONNECTED) {
-    M5.Lcd.print(".");
+    // M5.Lcd.print(".");
     delay(500);
     CONNECTION_TRIAL_COUNT++;
     if (CONNECTION_TRIAL_COUNT >= 30) {
@@ -41,9 +41,9 @@ void ConnectWifi() {
       esp_deep_sleep_start();
     }
   }
-  M5.Lcd.setCursor(0, 16);
-  M5.Lcd.print("IP address: ");
-  M5.Lcd.println(WiFi.localIP());
+  // M5.Lcd.setCursor(0, 16);
+  // M5.Lcd.print("IP address: ");
+  // M5.Lcd.println(WiFi.localIP());
   delay(500);
 }
 
